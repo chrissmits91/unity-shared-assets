@@ -5,6 +5,7 @@ public class MapPreview : MonoBehaviour
     public Renderer textureRenderer;
     public MeshFilter meshFilter;
     public MeshRenderer meshRenderer;
+    public MeshCollider meshCollider;
 
     public enum DrawMode {NoiseMap,Mesh,FalloffMap}
     public DrawMode drawMode = DrawMode.NoiseMap;
@@ -30,7 +31,9 @@ public class MapPreview : MonoBehaviour
 
     public void DrawMesh(MeshData meshData)
     {
-        meshFilter.sharedMesh = meshData.CreateMesh();
+        Mesh mesh = meshData.CreateMesh();
+        meshFilter.sharedMesh = mesh;
+        meshCollider.sharedMesh = mesh;
 
         textureRenderer.gameObject.SetActive(false);
         meshFilter.gameObject.SetActive(true);
