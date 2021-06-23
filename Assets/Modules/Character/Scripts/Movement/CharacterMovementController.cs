@@ -13,15 +13,13 @@ public class CharacterMovementController : MonoBehaviour
     private InputManager inputManager;
     private Transform cameraTransform;
 
-    private void Start()
-    {
+    private void Start() {
         controller = GetComponent<CharacterController>();
         inputManager = InputManager.Instance;
         cameraTransform = Camera.main.transform;
     }
 
-    private void Update()
-    {
+    private void Update() {
         groundedPlayer = controller.isGrounded;
         if (groundedPlayer && playerVelocity.y < 0)
         {
@@ -35,12 +33,15 @@ public class CharacterMovementController : MonoBehaviour
         controller.Move(move * Time.deltaTime * playerSpeed);
 
         // Changes the height position of the player..
-        if (inputManager.PlayerJumpedThisFrame() && groundedPlayer)
-        {
+        if (inputManager.PlayerJumpedThisFrame() && groundedPlayer) {
             playerVelocity.y += Mathf.Sqrt(jumpHeight * -3.0f * gravityValue);
         }
 
         playerVelocity.y += gravityValue * Time.deltaTime;
         controller.Move(playerVelocity * Time.deltaTime);
+    }
+
+    private void FixedUpdate() {
+        transform.localRotation = Quaternion.Euler(0f, cameraTransform.eulerAngles.y, 0f);
     }
 }

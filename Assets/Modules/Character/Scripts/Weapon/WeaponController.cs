@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using UnityEngine;
+using static UnityEngine.InputSystem.InputAction;
 using Random = UnityEngine.Random;
 
 namespace Player.Weapon
@@ -70,6 +71,8 @@ namespace Player.Weapon
 
         public string DisplayName => displayName;
 
+        private InputManager inputManager;
+
         private void Awake() 
         {
             ammo.EventEmptyClip += () => state = WeaponState.Empty;
@@ -79,30 +82,38 @@ namespace Player.Weapon
 
         private void Start()
         {
+            inputManager = InputManager.Instance;
+
             var weaponTransform = transform;
             weaponTransform.localPosition = initialPosition;
             weaponTransform.localRotation = initialRotation;
             
             // Default spread
             currentSpread = startSpread;
+
+            var playerAim = inputManager.PlayerAim();
+            playerAim.started += HandleStartADS;
+            playerAim.canceled += HandleEndADS;
         }
 
         private void OnDestroy() {
             ammo.EventEmptyClip -= () => state = WeaponState.Empty;
             ammo.EventReloading -= () => state = WeaponState.Reloading;
             ammo.EventReloaded -= () => state = WeaponState.Ready;
+
+            var playerAim = inputManager.PlayerAim();
+            playerAim.started -= HandleStartADS;
+            playerAim.canceled -= HandleEndADS;
         }
 
         private void Update()
         {
-            HandleAimingDownSight();
-
             HandleReload();
             
             // Play empty clip sound
             if (state != WeaponState.Ready) return;
             
-            var fire = Input.GetButtonDown("Fire1") || Input.GetButton("Fire1") && automatic;
+            var fire = inputManager.PlayerFiredThisFrame() || inputManager.PlayerFiredThisFrame() && automatic;
             var canShoot = fire && Time.time >= nextFire;
 
             if (!canShoot) return;
@@ -172,23 +183,21 @@ namespace Player.Weapon
             }
         }
 
-        private void HandleAimingDownSight()
+        private void HandleStartADS(CallbackContext ctx)
         {
-            if (Input.GetButton("Fire2"))
-            {
-                EventAimingDownSight?.Invoke(adsOffset, false);
-                Aiming = true;
-            }
-            else if (Input.GetButtonUp("Fire2"))
-            {
-                EventAimingDownSight?.Invoke(adsOffset, true);
-                Aiming = false;
-            }
+            EventAimingDownSight?.Invoke(adsOffset, false);
+            Aiming = true;
+        }
+
+        private void HandleEndADS(CallbackContext ctx)
+        {
+            EventAimingDownSight?.Invoke(adsOffset, true);
+            Aiming = false;
         }
 
         private void HandleReload()
         {
-            if (Input.GetKeyDown(KeyCode.R))
+            if (inputManager.PlayerReloadedThisFrame())
             {
                 ammo.ForceReload();
             }

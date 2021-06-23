@@ -43,4 +43,16 @@ public class InputManager : MonoBehaviour
     public bool PlayerJumpedThisFrame() {
         return playerControls.Player.Jump.triggered;
     }
+
+    public bool PlayerFiredThisFrame() {
+        return playerControls.Player.Fire.triggered;
+    }
+
+    public UnityEngine.InputSystem.InputAction PlayerAim() {
+        return playerControls.Player.Aim;
+    }
+
+    public bool PlayerReloadedThisFrame() {
+        return playerControls.Player.Reload.triggered;
+    }
 }
