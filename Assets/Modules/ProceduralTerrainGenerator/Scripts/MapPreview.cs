@@ -34,6 +34,7 @@ public class MapPreview : MonoBehaviour
         Mesh mesh = meshData.CreateMesh();
         meshFilter.sharedMesh = mesh;
         meshCollider.sharedMesh = mesh;
+        meshRenderer.sharedMaterial = terrainMaterial;
 
         textureRenderer.gameObject.SetActive(false);
         meshFilter.gameObject.SetActive(true);
@@ -42,9 +43,9 @@ public class MapPreview : MonoBehaviour
     public void DrawMapInEditor()
     {
         textureData.ApplyToMaterial(terrainMaterial);
-        textureData.UpdateMeshHeights(terrainMaterial, heightMapSettings.minHeight, heightMapSettings.maxHeight);
         HeightMap heightMap = HeightMapGenerator.GenerateHeightMap(meshSettings.numVertsPerLine, meshSettings.numVertsPerLine, heightMapSettings, Vector2.zero);
-        
+        textureData.UpdateMeshHeights(terrainMaterial, heightMap.minValue, heightMap.maxValue);
+
         if (drawMode == DrawMode.NoiseMap)
         {
             DrawTexture(TextureGenerator.TextureFromHeightMap(heightMap));

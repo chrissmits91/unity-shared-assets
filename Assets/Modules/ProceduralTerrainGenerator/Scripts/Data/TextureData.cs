@@ -11,7 +11,6 @@ public class TextureData : UpdatableData
     }
 
     public void UpdateMeshHeights(Material material, float minHeight, float maxHeight) {
-        material.SetFloat("minHeight", minHeight);
-        material.SetFloat("maxHeight", maxHeight);
+        material.SetVector("_elevationMinMax", new Vector2(minHeight, maxHeight));
     }
 }
