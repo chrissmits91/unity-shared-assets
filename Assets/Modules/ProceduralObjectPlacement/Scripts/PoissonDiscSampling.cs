@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -14,7 +13,7 @@ public static class PoissonDiscSampling
         List<Vector2> spawnPoints = new List<Vector2>(); // a place we'll try to spawn points around
         List<Vector3> pointsPlusRadius = new List<Vector3>(); // what we'll use to keep track of the points radii
 
-        spawnPoints.Add(sampleRegionSize / 2); // add first spawn point in the center
+        spawnPoints.Add(sampleRegionSize); // add first spawn point in the center
         while (spawnPoints.Count > 0)
         {
             int spawnIndex = Random.Range(0, spawnPoints.Count); // pick random guy to spawn

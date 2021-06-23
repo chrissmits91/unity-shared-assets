@@ -20,6 +20,13 @@ public class MapPreview : MonoBehaviour
 
     public bool autoUpdate;
 
+    public ObjectLayerPreview objectLayerPreview;
+
+    private void Start() {
+        HeightMap heightMap = HeightMapGenerator.GenerateHeightMap(meshSettings.numVertsPerLine, meshSettings.numVertsPerLine, heightMapSettings, Vector2.zero);
+        objectLayerPreview.RenderProceduralObjects(meshSettings.meshWorldSize, meshSettings.meshWorldSize, heightMap, meshFilter.mesh);
+    }
+
     public void DrawTexture(Texture2D texture)
     {
         textureRenderer.sharedMaterial.mainTexture = texture;

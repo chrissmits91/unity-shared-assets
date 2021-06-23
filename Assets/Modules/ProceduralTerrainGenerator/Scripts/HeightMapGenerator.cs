@@ -11,20 +11,20 @@ public static class HeightMapGenerator
         float minValue = float.MaxValue;
         float maxValue = float.MinValue;
 
-        for (int i = 0; i < width; i++)
+        for (int y = 0; y < height; y++)
         {
-            for (int j = 0; j < height; j++)
+            for (int x = 0; x < width; x++)
             {
-                values[i, j] *= settings.heightCurve.Evaluate(values[i, j]) * settings.heightMultiplier;
+                values[x, y] *= settings.heightCurve.Evaluate(values[x, y]) * settings.heightMultiplier;
 
-                if (values[i, j] > maxValue)
+                if (values[x, y] > maxValue)
                 {
-                    maxValue = values[i, j];
+                    maxValue = values[x, y];
                 }
 
-                if (values[i, j] < minValue)
+                if (values[x, y] < minValue)
                 {
-                    minValue = values[i, j];
+                    minValue = values[x, y];
                 }
             }
         }
