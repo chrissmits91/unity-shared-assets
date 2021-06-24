@@ -42,6 +42,10 @@ public class CharacterMovementController : MonoBehaviour
     }
 
     private void FixedUpdate() {
-        transform.localRotation = Quaternion.Euler(0f, cameraTransform.eulerAngles.y, 0f);
+        transform.localRotation = Quaternion.Euler(
+            transform.localRotation.eulerAngles.x, 
+            cameraTransform.eulerAngles.y, 
+            transform.localRotation.eulerAngles.z
+        );
     }
 }

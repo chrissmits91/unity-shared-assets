@@ -13,6 +13,10 @@ public class PivotRotation : MonoBehaviour
     // Update is called once per frame
     private void FixedUpdate()
     {
-        transform.localRotation = Quaternion.Euler(cameraTransform.rotation.eulerAngles.x, 0f, 0f);
+        transform.localRotation = Quaternion.Euler(
+            cameraTransform.rotation.eulerAngles.x, 
+            transform.localRotation.eulerAngles.y, 
+            transform.localRotation.eulerAngles.z
+        );
     }
 }
