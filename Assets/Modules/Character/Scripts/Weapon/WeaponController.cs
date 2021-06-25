@@ -52,6 +52,8 @@ namespace Player.Weapon
         
         private float nextFire;
 
+        private bool isFiring;
+
         private WeaponState state = WeaponState.Empty;
 
         private Vector3 currentSpread;
@@ -72,6 +74,8 @@ namespace Player.Weapon
         public string DisplayName => displayName;
 
         private InputManager inputManager;
+
+        private Camera mainCamera;
 
         private void Awake() 
         {
@@ -94,6 +98,12 @@ namespace Player.Weapon
             var playerAim = inputManager.PlayerAim();
             playerAim.started += HandleStartADS;
             playerAim.canceled += HandleEndADS;
+
+            var playerFire = inputManager.PlayerFire();
+            playerFire.started += (CallbackContext ctx) => isFiring = true;
+            playerFire.canceled += (CallbackContext ctx) => isFiring = false;
+
+            mainCamera = Camera.main;
         }
 
         private void OnDestroy() {
@@ -104,6 +114,10 @@ namespace Player.Weapon
             var playerAim = inputManager.PlayerAim();
             playerAim.started -= HandleStartADS;
             playerAim.canceled -= HandleEndADS;
+
+            var playerFire = inputManager.PlayerFire();
+            playerFire.started -= (CallbackContext ctx) => isFiring = true;
+            playerFire.canceled -= (CallbackContext ctx) => isFiring = false;
         }
 
         private void Update()
@@ -113,7 +127,7 @@ namespace Player.Weapon
             // Play empty clip sound
             if (state != WeaponState.Ready) return;
             
-            var fire = inputManager.PlayerFiredThisFrame() || inputManager.PlayerFiredThisFrame() && automatic;
+            var fire = inputManager.PlayerFiredThisFrame() || isFiring && automatic;
             var canShoot = fire && Time.time >= nextFire;
 
             if (!canShoot) return;
@@ -127,13 +141,11 @@ namespace Player.Weapon
             ammo.Decrement();
         }
 
-        private void Shoot(Vector3 _shootPosition)
+        private void Shoot(Vector3 shootPosition)
         {
-            if (Camera.main == null) return;
-            
-            var ray = Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
-            var targetPoint = Physics.Raycast(ray, out var hit) ? hit.point : ray.GetPoint(range);
-            var direction = targetPoint - _shootPosition;
+            // var ray = mainCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
+            // var targetPoint = Physics.Raycast(ray, out var hit) ? hit.point : ray.GetPoint(range);
+            var direction = shootPoint.forward;
 
             if (!Aiming && !burst)
             {
@@ -142,16 +154,16 @@ namespace Player.Weapon
 
             if (burst)
             {
-                BurstFire(_shootPosition, direction);
+                BurstFire(shootPosition, direction);
             }
             else
             {
-                Instantiate(bullet, _shootPosition, Quaternion.LookRotation(direction));
+                Instantiate(bullet, shootPosition, Quaternion.LookRotation(direction));
             }
 
             if (muzzleFlash)
             {
-                var flash = Instantiate(muzzleFlash, _shootPosition, Quaternion.LookRotation(direction), transform);
+                var flash = Instantiate(muzzleFlash, shootPosition, Quaternion.LookRotation(direction), transform);
                 flash.transform.localScale *= 0.1f;
                 Destroy(flash, 0.1f);
             }
@@ -203,21 +215,21 @@ namespace Player.Weapon
             }
         }
 
-        private Vector3 AddSpreadToBullet(Vector3 _direction)
+        private Vector3 AddSpreadToBullet(Vector3 direction)
         {
-            _direction += new Vector3(
+            direction += new Vector3(
                 Random.Range(-currentSpread.x, currentSpread.x),
                 Random.Range(-currentSpread.y, currentSpread.y),
                 Random.Range(-currentSpread.z, currentSpread.z)
                 );
 
-            if (!(CurrentSpreadMultiplier < maxSpreadMultiplier)) return _direction;
+            if (!(CurrentSpreadMultiplier < maxSpreadMultiplier)) return direction;
             
             CurrentSpreadMultiplier += spreadMultiplier;
             currentSpread = startSpread * (1 + CurrentSpreadMultiplier);
             StartCoroutine(ResetAddedSpread());
 
-            return _direction;
+            return direction;
         }
 
         private IEnumerator ResetAddedSpread()

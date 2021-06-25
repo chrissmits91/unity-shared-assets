@@ -6,26 +6,18 @@ namespace Player.Weapon
     {
         [SerializeField] private GameObject cameraRecoilHandler;
         [SerializeField] private float positionalSpeed = 10f;
+        [SerializeField] private GunHolder gunHolder;
 
-        private GunHolder gunHolder;
-        
-        private void Awake()
-        {
-            gunHolder = GetComponent<GunHolder>();
-            gunHolder.EventWeaponSwitch += OnWeaponSwitch;
-        }
-
-        private void OnWeaponSwitch()
+        private void Setup()
         {
             gunHolder.EquipedWeapon.EventFire += OnFire;
         }
 
-        private void OnFire(float _upRecoil, float _sideRecoil, float _adsRecoilDamping, bool _ads)
+        private void OnFire(float upRecoil, float sideRecoil, float adsRecoilDamping, bool ads)
         {
-            if (_ads)
-            {
-                _upRecoil *= 1f - _adsRecoilDamping;
-                _sideRecoil *= 1f - _adsRecoilDamping;
+            if (ads) {
+                upRecoil *= 1f - adsRecoilDamping;
+                sideRecoil *= 1f - adsRecoilDamping;
             }
 
             var localRotation = cameraRecoilHandler.transform.localRotation;
@@ -33,8 +25,8 @@ namespace Player.Weapon
             localRotation = Quaternion.Lerp(
                 localRotation,
                 Quaternion.Euler(
-                    currentRecoilAngles.x - _upRecoil,
-                    currentRecoilAngles.y - _sideRecoil,
+                    currentRecoilAngles.x - upRecoil,
+                    currentRecoilAngles.y - sideRecoil,
                     currentRecoilAngles.z),
                 positionalSpeed * Time.deltaTime
             );

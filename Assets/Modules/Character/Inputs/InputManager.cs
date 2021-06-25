@@ -21,8 +21,8 @@ public class InputManager : MonoBehaviour
 
         playerControls = new PlayerControls();
 
-        Cursor.visible = false;
-        Cursor.lockState = CursorLockMode.Locked;
+        // Cursor.visible = false;
+        // Cursor.lockState = CursorLockMode.Locked;
     }
 
     private void OnEnable() {
@@ -47,6 +47,10 @@ public class InputManager : MonoBehaviour
 
     public bool PlayerFiredThisFrame() {
         return playerControls.Player.Fire.triggered;
+    }
+
+    public UnityEngine.InputSystem.InputAction PlayerFire() {
+        return playerControls.Player.Fire;
     }
 
     public UnityEngine.InputSystem.InputAction PlayerAim() {

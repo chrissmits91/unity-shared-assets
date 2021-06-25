@@ -40,12 +40,4 @@ public class CharacterMovementController : MonoBehaviour
         playerVelocity.y += gravityValue * Time.deltaTime;
         controller.Move(playerVelocity * Time.deltaTime);
     }
-
-    private void FixedUpdate() {
-        transform.localRotation = Quaternion.Euler(
-            transform.localRotation.eulerAngles.x, 
-            cameraTransform.eulerAngles.y, 
-            transform.localRotation.eulerAngles.z
-        );
-    }
 }
